@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  lfi-challenge:
+    build: .
+    container_name: lfi-challenge
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      - FLASK_ENV=development
+    networks:
+      - lfi-network
+
+networks:
+  lfi-network:
+    driver: bridge
+

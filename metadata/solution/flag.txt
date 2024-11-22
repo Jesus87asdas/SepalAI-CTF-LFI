@@ -1,0 +1,1 @@
+flag{SepalAI_CTF_2024_secretkey}
